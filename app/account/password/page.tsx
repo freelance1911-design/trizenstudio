@@ -25,13 +25,26 @@ export default function PasswordPage() {
       const code = query.get("code");
       const tokenHash = query.get("token_hash");
       const inviteEmail = query.get("invite_email")?.trim().toLowerCase() ?? "";
-      const authError = query.get("error_description");
+      const authError =
+        query.get("error_description") ||
+        hash.get("error_description");
+      const authErrorCode =
+        query.get("error_code") ||
+        hash.get("error_code");
       const hasInviteToken = Boolean(accessToken && refreshToken) || Boolean(code) || Boolean(tokenHash);
 
       let session;
 
       if (authError) {
-        setError(decodeURIComponent(authError.replace(/\+/g, " ")));
+        const decodedError = decodeURIComponent(
+          authError.replace(/\+/g, " ")
+        );
+
+        setError(
+          authErrorCode === "otp_expired"
+            ? "This invitation link has expired or has already been used. Ask the admin to send a new invitation."
+            : decodedError
+        );
         setAuthReady(true);
         return;
       }

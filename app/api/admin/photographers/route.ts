@@ -3,9 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "https://trizenstudio-fawn.vercel.app";
+const SITE_URL = "https://trizenstudio-fawn.vercel.app";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
