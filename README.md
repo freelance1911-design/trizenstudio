@@ -1,36 +1,659 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Trizen Studio — Photo Sharing & Gallery Platform
 
-## Getting Started
+A full-stack photography workspace built for photography and event teams to manage events, collaborate with photographers, upload and curate photographs, and publish secure customer galleries.
 
-First, run the development server:
+The platform provides separate experiences for **Administrators**, **Photographers/Team Members**, and **Customers**.
 
-```bash
+---
+
+## ✦ Features
+
+### Admin
+
+Administrators can:
+
+- Register and log in securely
+- Create and manage photography events
+- Add photographers to the team
+- Assign photographers to events
+- View photographer activity
+- Monitor uploads
+- View all photographs uploaded to events
+- Curate photographs for customer galleries
+- Create and publish customer galleries
+- Set a secure gallery PIN
+- Generate shareable gallery links
+- Manage team members
+- Delete photographer accounts
+
+### Photographer / Team Member
+
+Photographers can:
+
+- Log in securely
+- View assigned events
+- View event details
+- Upload photographs
+- Upload multiple photographs
+- Preview photographs before uploading
+- View their recent uploads
+- Delete their own uploaded photographs
+- Track upload progress
+
+Photographers cannot:
+
+- Manage other photographers
+- Assign photographers to events
+- Publish galleries
+- Manage gallery access
+- Access administrative functionality
+
+### Customer
+
+Customers do not need an account.
+
+They can:
+
+1. Open a shared gallery URL
+2. Enter the gallery PIN
+3. Access the published photographs
+4. Browse the gallery securely
+
+Unpublished galleries cannot be accessed by customers.
+
+---
+
+# Tech Stack
+
+## Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+
+## Backend
+
+- Next.js API Routes
+- Supabase
+
+## Database
+
+- PostgreSQL via Supabase
+
+## Authentication
+
+- Supabase Authentication
+- Role-based authorization
+
+Roles:
+
+ADMIN
+TEAM_MEMBER
+Storage
+Supabase Storage
+Private storage bucket
+Signed URLs for protected photographs
+Deployment
+Vercel
+Architecture
+                    ┌─────────────────────┐
+                    │      Customer       │
+                    │                     │
+                    │ Gallery URL + PIN   │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │  Published Gallery  │
+                    │                     │
+                    │ Signed Image URLs   │
+                    └─────────────────────┘
+
+
+┌──────────────────┐
+│      Admin       │
+│                  │
+│ Events           │
+│ Team Management  │
+│ Photo Curation   │
+│ Galleries        │
+└────────┬─────────┘
+         │
+         ▼
+┌─────────────────────────────┐
+│       Supabase              │
+│                             │
+│ PostgreSQL                  │
+│ Authentication              │
+│ Private Storage             │
+└─────────────┬───────────────┘
+              │
+              ▼
+┌─────────────────────────────┐
+│       Photographers         │
+│                             │
+│ Assigned Events             │
+│ Photo Uploads               │
+└─────────────────────────────┘
+
+Project Structure
+
+photo-sharing-platform/
+│
+├── app/
+│   │
+│   ├── admin/
+│   │   ├── page.tsx
+│   │   │
+│   │   └── events/
+│   │       ├── page.tsx
+│   │       ├── new/
+│   │       │   └── page.tsx
+│   │       │
+│   │       └── [id]/
+│   │           ├── page.tsx
+│   │           ├── photos/
+│   │           │   └── page.tsx
+│   │           └── gallery/
+│   │               └── page.tsx
+│   │
+│   ├── api/
+│   │   ├── admin/
+│   │   │   └── photographers/
+│   │   │       └── route.ts
+│   │   │
+│   │   └── gallery/
+│   │       └── access/
+│   │           └── route.ts
+│   │
+│   ├── gallery/
+│   │   └── [slug]/
+│   │       └── page.tsx
+│   │
+│   ├── login/
+│   │   └── page.tsx
+│   │
+│   └── team/
+│       └── page.tsx
+│
+├── src/
+│   └── lib/
+│       └── supabase/
+│           └── client.ts
+│
+├── public/
+│   └── ...
+│
+├── .env.local
+├── package.json
+├── tsconfig.json
+└── README.md
+Database
+
+The application uses PostgreSQL through Supabase.
+
+Main tables:
+
+profiles
+events
+event_members
+photos
+galleries
+gallery_photos
+Profiles
+
+Stores application-level user information and roles.
+
+id
+full_name
+email
+role
+created_at
+Events
+
+Stores photography projects/events.
+
+id
+name
+description
+event_date
+thumbnail_path
+created_by
+created_at
+Event Members
+
+Connects photographers with events.
+
+id
+event_id
+user_id
+Photos
+
+Stores photograph metadata.
+
+id
+event_id
+uploaded_by
+filename
+storage_path
+file_size
+created_at
+
+The actual image files are stored in Supabase Storage.
+
+The database stores only metadata and storage paths.
+
+Galleries
+
+Stores customer gallery information.
+
+id
+event_id
+slug
+pin_hash
+published
+created_at
+published_at
+Gallery Photos
+
+Connects selected photographs to galleries.
+
+id
+gallery_id
+photo_id
+created_at
+Storage
+
+The application uses a private Supabase Storage bucket named:
+
+photos
+
+Images are stored using an event/user-based structure:
+
+photos/
+│
+├── event-id/
+│   └── photographer-id/
+│       ├── photo-1.jpg
+│       ├── photo-2.jpg
+│       └── photo-3.jpg
+│
+└── event-thumbnails/
+    └── event-id/
+        └── thumbnail.webp
+
+Images are not stored directly inside PostgreSQL.
+
+Private photographs are accessed using temporary signed URLs.
+
+Authentication & Authorization
+
+Supabase Authentication handles user authentication.
+
+Application roles are stored in the profiles table.
+
+ADMIN
+TEAM_MEMBER
+Admin permissions
+Create events
+Manage photographers
+Assign events
+View all uploads
+Curate galleries
+Publish galleries
+Delete photographers
+Photographer permissions
+View assigned events
+Upload photographs
+View own photographs
+Delete own photographs
+Customer permissions
+
+Customers do not have accounts.
+
+They can only access a gallery after providing the correct PIN.
+
+Gallery Security
+
+Customer galleries are private by default.
+
+A gallery must be explicitly published before it becomes accessible.
+
+Gallery access requires:
+
+Gallery URL
++
+Gallery PIN
+
+Gallery PINs are not stored as plain text.
+
+They are stored as SHA-256 hashes.
+
+The gallery access API verifies the PIN before returning gallery photographs.
+
+Photographs are stored in a private storage bucket and delivered using temporary signed URLs.
+
+Environment Variables:
+
+Create a .env.local file in the project root.
+
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+Important
+
+Never commit .env.local to GitHub.
+
+The service-role key is a server-side secret and must never be exposed to the browser.
+
+Make sure .env.local is included in .gitignore.
+
+Local Development:
+1. Clone the repository
+git clone https://github.com/freelance1911-design/trizenstudio.git
+2. Enter the project
+cd trizenstudio
+3. Install dependencies
+npm install
+4. Configure environment variables
+
+Create:
+
+.env.local
+
+and add the Supabase credentials.
+
+5. Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
+Supabase Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a Supabase project and configure:
 
-## Learn More
+Authentication:
 
-To learn more about Next.js, take a look at the following resources:
+Enable email/password authentication.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create the required tables:
 
-## Deploy on Vercel
+profiles
+events
+event_members
+photos
+galleries
+gallery_photos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Configure Row Level Security policies for the application.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+##Storage
+
+Create a private bucket:
+
+photos
+
+Configure storage policies for authenticated users.
+
+Initial Admin Account
+
+The application requires an administrator account to manage the workspace.
+
+For production, create the initial admin account through Supabase Authentication and assign:
+
+role = ADMIN
+
+in the profiles table.
+
+Do not hard-code administrator credentials in the application source code.
+
+Photographer Onboarding
+
+Administrators can add photographers from:
+
+Team → Add photographer
+
+The administrator provides:
+
+Full name
+Email address
+
+The application creates the photographer's account and generates a secure setup link.
+
+The photographer uses the setup link to configure their password.
+
+Event Workflow
+
+The typical workflow is:
+
+1. Admin creates event
+          ↓
+2. Admin adds photographers
+          ↓
+3. Admin assigns photographers
+          ↓
+4. Photographers upload photographs
+          ↓
+5. Admin reviews photographs
+          ↓
+6. Admin selects photographs
+          ↓
+7. Admin creates gallery
+          ↓
+8. Admin sets gallery PIN
+          ↓
+9. Admin publishes gallery
+          ↓
+10. Customer receives gallery URL + PIN
+Photo Upload Flow
+
+Photographers can upload multiple images.
+
+Supported formats:
+
+JPEG
+PNG
+WebP
+
+Maximum individual file size:
+
+20 MB
+
+Before uploading, photographers can preview selected images.
+
+Uploaded files are stored in Supabase Storage.
+
+After successful storage upload, metadata is inserted into PostgreSQL.
+
+Error Handling
+
+The application handles common failure cases including:
+
+Invalid login credentials
+Expired sessions
+Missing user profiles
+Unauthorized access
+Invalid roles
+Invalid file types
+Oversized files
+Failed uploads
+Database insertion failures
+Invalid gallery PINs
+Unpublished galleries
+Deleted photographer accounts
+Performance
+
+Several optimizations are included:
+
+Parallel Supabase requests
+Batched signed URL generation
+Limited initial photo queries
+Lazy-loaded images
+Image previews before upload
+Upload progress indicators
+Limited dashboard queries
+Skeleton loading states
+
+For larger production libraries, pagination/infinite scrolling and image thumbnails can be added to further improve performance.
+
+##Deployment
+
+The application is designed to be deployed using Vercel.
+
+Build
+npm run build
+Start production server
+npm start
+Vercel Environment Variables
+
+Add the following environment variables in Vercel:
+
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+SUPABASE_SERVICE_ROLE_KEY
+
+Use the same Supabase project configured for the application.
+
+Production Configuration
+
+After deployment, update Supabase Authentication settings with the production Vercel URL.
+
+##Configure:
+
+Site URL
+Redirect URLs
+
+to include the production domain.
+
+For example:
+
+https://your-project.vercel.app
+
+Do not use localhost URLs for production authentication redirects.
+
+Testing Checklist
+Authentication
+ Admin can log in
+ Photographer can log in
+ Invalid credentials are rejected
+ Logged-out users cannot access protected workspaces
+ Deleted photographers cannot access the workspace
+Admin
+ Admin can create events
+ Admin can add photographers
+ Admin can assign photographers
+ Admin can remove assignments
+ Admin can delete photographers
+ Admin can view uploaded photographs
+ Admin can create galleries
+ Admin can publish galleries
+Photographer
+ Photographer sees assigned events
+ Photographer cannot access admin functionality
+ Photographer can upload photos
+ Multiple uploads work
+ Invalid file types are rejected
+ Files above 20 MB are rejected
+ Photographer can delete their own photos
+Customer
+ Customer does not need an account
+ Gallery requires PIN
+ Incorrect PIN is rejected
+ Unpublished galleries cannot be accessed
+ Published gallery photographs load correctly
+ Private storage files are not publicly accessible
+Security Considerations
+
+The application follows several security principles:
+
+Supabase Authentication for user authentication
+Role-based authorization
+PostgreSQL Row Level Security
+Private object storage
+Temporary signed URLs
+Hashed gallery PINs
+Server-side service-role operations
+Input validation
+File type validation
+File size validation
+Unauthorized access protection
+
+The Supabase service-role key is used only in server-side code.
+
+Future Improvements
+
+Potential improvements include:
+
+Image thumbnail generation
+Automatic image resizing
+Infinite scrolling
+Pagination
+Bulk download
+Bulk photo selection
+Gallery expiration
+Customer favorites
+Photo comments
+Search and filtering
+Drag-and-drop gallery ordering
+Activity audit logs
+Email notifications
+Photographer invitation emails
+Advanced analytics
+Design
+
+The interface follows an editorial photography aesthetic rather than a traditional SaaS dashboard.
+
+Design principles include:
+
+Warm ivory backgrounds
+Dark charcoal typography
+Serif editorial headings
+Minimal borders
+Generous whitespace
+Photography-focused layouts
+Responsive design
+Subtle interactions
+Premium visual hierarchy
+Project Status
+
+Status: Production-ready MVP
+
+The core workflow is implemented:
+
+Authentication
+      ↓
+Team Management
+      ↓
+Event Management
+      ↓
+Photographer Assignments
+      ↓
+Photo Upload
+      ↓
+Photo Review
+      ↓
+Gallery Creation
+      ↓
+PIN Protection
+      ↓
+Customer Delivery
+License
+
+This project was developed as a full-stack photography workspace application for demonstration and evaluation purposes.
+
+
+### One thing before you commit
+
+Since we're deploying now, make sure `.gitignore` contains:
+
+```gitignore
+.env.local
+.env*.local
+.next/
+node_modules/
