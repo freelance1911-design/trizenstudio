@@ -1,12 +1,29 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../src/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const hasInviteSession = Boolean(
+      (hash.get("access_token") && hash.get("refresh_token")) ||
+        query.get("code") ||
+        query.get("token_hash")
+    );
+
+    if (hasInviteSession) {
+      router.replace(
+        `/account/password${window.location.search}${window.location.hash}`
+      );
+    }
+  }, [router]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
