@@ -1,26 +1,45 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f4ee;
+  --foreground: #17212b;
+  --paper: #f7f4ee;
+  --ink: #17212b;
+  --muted: #69747a;
+  --line: rgba(23, 33, 43, 0.13);
+  --orange: #e5763f;
+  --teal: #176875;
+  --gold: #efb44c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-manrope);
+  --font-serif: var(--font-cormorant);
+  --font-mono: var(--font-manrope);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
+}
+
+h1, h2, h3, h4, .font-serif {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+button, a, input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 3px solid rgba(229, 118, 63, 0.35);
+  outline-offset: 3px;
 }
