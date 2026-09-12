@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "../../../../../src/lib/supabase/client";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://trizenstudio-fawn.vercel.app";
+
 type Event = {
   id: string;
   name: string;
@@ -326,8 +330,7 @@ export default function GalleryManagerPage() {
   async function copyGalleryLink() {
     if (!gallery) return;
 
-    const url =
-      `${window.location.origin}/gallery/${gallery.slug}`;
+    const url = `${SITE_URL}/gallery/${gallery.slug}`;
 
     await navigator.clipboard.writeText(url);
 
@@ -355,7 +358,7 @@ export default function GalleryManagerPage() {
   if (!event) return null;
 
   const galleryUrl = gallery
-    ? `${typeof window !== "undefined" ? window.location.origin : ""}/gallery/${gallery.slug}`
+    ? `${SITE_URL}/gallery/${gallery.slug}`
     : "";
 
   return (

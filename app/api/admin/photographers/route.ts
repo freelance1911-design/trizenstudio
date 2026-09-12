@@ -3,6 +3,10 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://trizenstudio-fawn.vercel.app";
+
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -116,7 +120,7 @@ export async function POST(request: NextRequest) {
             role: "TEAM_MEMBER",
             password_set: false,
           },
-          redirectTo: `${new URL(request.url).origin}/account/password?invite_email=${encodeURIComponent(email)}`,
+            redirectTo: `${SITE_URL}/account/password?invite_email=${encodeURIComponent(email)}`,
         },
       });
 
