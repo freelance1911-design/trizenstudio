@@ -20,17 +20,7 @@ https://github.com/freelance1911-design/trizenstudio
 
 Trizen Studio provides a complete workflow for managing event photographs from upload to customer delivery.
 
-The platform supports three types of users:
-
-- **Admin / Lead**
-- **Team Member / Photographer**
-- **Customer**
-
-The Admin manages events, photographers, uploaded photographs, photo selection, and customer galleries.
-
-Team Members can view their assigned events and upload photographs.
-
-Customers do not need an account. They receive a gallery URL and PIN to securely access published photographs.
+The platform provides separate experiences for **Administrators**, **Photographers/Team Members**, and **Customers**.
 
 ---
 
@@ -67,110 +57,95 @@ Customers do not need an account. They receive a gallery URL and PIN to securely
 
 ### Customer
 
-- No account required
-- Access gallery using a shareable URL
-- Enter gallery PIN
-- View published photographs
-- Browse the gallery
+Customers do not need an account.
+
+They can:
+
+1. Open a shared gallery URL
+2. Enter the gallery PIN
+3. Access the published photographs
+4. Browse the gallery securely
+
+Unpublished galleries cannot be accessed by customers.
 
 ---
 
-## Technology Stack
+# Tech Stack
 
-| Category | Technology |
-|---|---|
-| Frontend | Next.js |
-| UI | React |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| Backend / API | Next.js API Routes |
-| Database | PostgreSQL |
-| Database Platform | Supabase |
-| Authentication | Supabase Auth |
-| File Storage | Supabase Storage |
-| Deployment | Vercel |
+## Frontend
 
----
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
 
-## Architecture
+## Backend
 
-The application uses Next.js for the frontend and API layer, Supabase for authentication and backend services, PostgreSQL for application metadata, and Supabase Storage for private photographs.
+- Next.js API Routes
+- Supabase
 
-```text
-                         ┌──────────────────────┐
-                         │      Customer        │
-                         │                      │
-                         │  Gallery URL + PIN   │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                         ┌──────────────────────┐
-                         │  Published Gallery   │
-                         │                      │
-                         │  PIN Verification    │
-                         │  Signed Image URLs   │
-                         └──────────┬───────────┘
-                                    │
-                                    │
-              ┌─────────────────────┴─────────────────────┐
-              │                                           │
-              ▼                                           ▼
-     ┌──────────────────────┐                   ┌──────────────────────┐
-     │        Admin         │                   │    Team Member       │
-     │                      │                   │                      │
-     │  Create Events       │                   │  Assigned Events     │
-     │  Manage Team         │                   │  Upload Photos       │
-     │  Review Photos       │                   │  View Own Photos     │
-     │  Select Photos       │                   │  Delete Own Photos   │
-     │  Manage Galleries    │                   │                      │
-     └──────────┬───────────┘                   └──────────┬───────────┘
-                │                                          │
-                └──────────────────┬───────────────────────┘
-                                   │
-                                   ▼
-                         ┌──────────────────────┐
-                         │       Supabase       │
-                         │                      │
-                         │  Authentication      │
-                         │  PostgreSQL          │
-                         │  Private Storage     │
-                         └──────────┬───────────┘
-                                    │
-                       ┌────────────┴────────────┐
-                       │                         │
-                       ▼                         ▼
-              ┌─────────────────┐      ┌──────────────────┐
-              │   PostgreSQL    │      │ Supabase Storage │
-              │                 │      │                  │
-              │ Users / Roles   │      │ Private Photos  │
-              │ Events          │      │ Event Thumbnails│
-              │ Assignments     │      │                  │
-              │ Photo Metadata  │      │ Signed URLs     │
-              │ Galleries       │      │                  │
-              └─────────────────┘      └──────────────────┘
-                                   
-                         ┌────────────────┐
-                         │     Vercel     │
-                         │   Deployment   │
-                         └────────────────┘
-Architecture Flow
-Admin creates an event.
-Admin adds photographers.
-Admin assigns photographers to the event.
-Photographers upload event photographs.
-Photographs are stored in private Supabase Storage.
-PostgreSQL stores photograph metadata.
-Admin reviews uploaded photographs.
-Admin selects photographs for publishing.
-Admin creates a customer gallery.
-Admin sets a gallery PIN.
-Admin publishes the gallery.
-Customer receives the gallery URL and PIN.
-Customer enters the PIN.
-The gallery API verifies the PIN.
-Temporary signed URLs are generated for private photographs.
-Customer views the published gallery.
+## Database
+
+- PostgreSQL via Supabase
+
+## Authentication
+
+- Supabase Authentication
+- Role-based authorization
+
+Roles:
+
+ADMIN
+TEAM_MEMBER
+Storage
+Supabase Storage
+Private storage bucket
+Signed URLs for protected photographs
+Deployment
+Vercel
+Architecture
+                    ┌─────────────────────┐
+                    │      Customer       │
+                    │                     │
+                    │ Gallery URL + PIN   │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │  Published Gallery  │
+                    │                     │
+                    │ Signed Image URLs   │
+                    └─────────────────────┘
+
+
+┌──────────────────┐
+│      Admin       │
+│                  │
+│ Events           │
+│ Team Management  │
+│ Photo Curation   │
+│ Galleries        │
+└────────┬─────────┘
+         │
+         ▼
+┌─────────────────────────────┐
+│       Supabase              │
+│                             │
+│ PostgreSQL                  │
+│ Authentication              │
+│ Private Storage             │
+└─────────────┬───────────────┘
+              │
+              ▼
+┌─────────────────────────────┐
+│       Photographers         │
+│                             │
+│ Assigned Events             │
+│ Photo Uploads               │
+└─────────────────────────────┘
+
 Project Structure
+
 photo-sharing-platform/
 │
 ├── app/
@@ -227,93 +202,88 @@ photo-sharing-platform/
 ├── next.config.ts
 ├── postcss.config.mjs
 └── README.md
-Database
+## Database
 
-The application uses PostgreSQL through Supabase.
+The application uses **PostgreSQL through Supabase**.
 
-Main Tables
-Table	Purpose
-profiles	Stores users and their application roles
-events	Stores photography events
-event_members	Connects photographers with events
-photos	Stores photograph metadata
-galleries	Stores customer gallery information
-gallery_photos	Connects selected photographs to galleries
+Main tables:
+
+profiles
+events
+event_members
+photos
+galleries
+gallery_photos
 Profiles
 
 Stores application-level user information and roles.
 
-Column	Description
-id	Unique user ID linked to Supabase Auth
-full_name	User's full name
-email	User's email address
-role	User role: ADMIN or TEAM_MEMBER
-created_at	Account creation timestamp
+id
+full_name
+email
+role
+created_at
 Events
 
-Stores photography projects and events.
+Stores photography projects/events.
 
-Column	Description
-id	Unique event ID
-name	Event name
-description	Event description
-event_date	Event date
-thumbnail_path	Storage path for the event thumbnail
-event_created_by	Admin who created the event
-created_at	Event creation timestamp
+id
+name
+description
+event_date
+thumbnail_path
+created_by
+created_at
 Event Members
 
-Connects photographers with their assigned events.
+Connects photographers with events.
 
-Column	Description
-id	Unique assignment ID
-event_id	Assigned event
-user_id	Assigned team member
+id
+event_id
+user_id
 Photos
 
-Stores metadata for uploaded photographs.
+Stores photograph metadata.
 
-Column	Description
-id	Unique photo ID
-event_id	Event associated with the photo
-uploaded_by	Team member who uploaded the photo
-filename	Original file name
-storage_path	Supabase Storage location
-file_size	File size in bytes
-created_at	Upload timestamp
+id
+event_id
+uploaded_by
+filename
+storage_path
+file_size
+created_at
 
-The actual image files are stored in Supabase Storage.
+The actual image files are stored in **Supabase Storage**.
 
-The PostgreSQL database stores only photograph metadata and storage paths.
+The database stores only metadata and storage paths.
 
-Galleries
+### Galleries
 
 Stores customer gallery information.
 
-Column	Description
-id	Unique gallery ID
-event_id	Event associated with the gallery
-slug	Unique shareable gallery identifier
-pin_hash	SHA-256 hash of the gallery PIN
-published	Gallery publication status
-created_at	Gallery creation timestamp
-published_at	Gallery publication timestamp
+id
+event_id
+slug
+pin_hash
+published
+created_at
+published_at
 Gallery Photos
 
 Connects selected photographs to galleries.
 
-Column	Description
-id	Unique gallery-photo record
-gallery_id	Gallery ID
-photo_id	Selected photo ID
-created_at	Selection timestamp
+id
+gallery_id
+photo_id
+created_at
 Storage
 
-The application uses a private Supabase Storage bucket named:
+The application uses a **private Supabase Storage bucket** named:
 
+```text
 photos
 
-Images are stored using an event and photographer-based structure:
+Images are stored using an event/user-based structure:
 
 photos/
 │
@@ -326,14 +296,8 @@ photos/
 └── event-thumbnails/
     └── {event-id}/
         └── thumbnail.webp
-
 Images are not stored directly inside PostgreSQL.
 
-Instead:
-
-Supabase Storage stores the actual image files.
-PostgreSQL stores photograph metadata.
-Storage paths are stored in the photos table.
 Private photographs are accessed using temporary signed URLs.
 Authentication & Authorization
 
@@ -350,45 +314,29 @@ Administrators can:
 
 Create events
 Manage photographers
-Assign photographers to events
-View all uploaded photographs
-Review photographs
-Select photographs
-Create galleries
+Assign events
+View all uploads
+Curate galleries
 Publish galleries
 Delete photographers
-Remove event assignments
-Team Member Permissions
-
-Team Members can:
-
-Log in
+Photographer permissions
 View assigned events
 Upload photographs
-View their own photographs
-Delete their own photographs
-
-Team Members cannot:
-
-Manage other users
-Access Admin functionality
-Publish galleries
-Manage other photographers' photographs
-Customer Permissions
+View own photographs
+Delete own photographs
+Customer permissions
 
 Customers do not need an account.
 
-Customers can only access a published gallery after providing the correct gallery PIN.
+They can only access a gallery after providing the correct PIN.
 
 Gallery Security
 
 Customer galleries are private by default.
 
-A gallery must be explicitly published by an administrator before it becomes accessible.
+A gallery must be explicitly published before it becomes accessible.
 
-Gallery Access
-
-Customers require:
+Gallery access requires:
 
 Gallery URL
 +
@@ -409,7 +357,7 @@ Returns the protected photographs to the customer.
 
 Photographs are stored in a private storage bucket and are not directly publicly accessible.
 
-Environment Variables
+Environment Variables:
 
 Create a .env.local file in the project root.
 
@@ -418,7 +366,8 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-Important
+
+##Important
 
 Never commit .env.local or other secrets to GitHub.
 
@@ -426,8 +375,8 @@ The SUPABASE_SERVICE_ROLE_KEY is a server-side secret and must never be exposed 
 
 Make sure .env.local is included in .gitignore.
 
-Local Development
-1. Clone the Repository
+Local Development:
+1. Clone the repository
 git clone https://github.com/freelance1911-design/trizenstudio.git
 2. Enter the Project
 cd trizenstudio
@@ -451,12 +400,10 @@ Supabase Setup
 
 Create a Supabase project and configure the following services.
 
-Authentication
+Authentication:
 
 Enable:
 
-Email/password authentication
-Email invitations for team members
 Database
 
 Create the required tables:
@@ -746,4 +693,15 @@ Gallery Publishing
 Customer Delivery
 License
 
-This project was developed as a full-stack photography workspace application for demonstration and internship evaluation purposes.
+This project was developed as a full-stack photography workspace application for demonstration and evaluation purposes.
+
+
+### One thing before you commit
+
+Since we're deploying now, make sure `.gitignore` contains:
+
+```gitignore
+.env.local
+.env*.local
+.next/
+node_modules/
