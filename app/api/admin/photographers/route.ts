@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
           full_name: fullName,
           email,
         },
-        setupLink: invite.properties.action_link,
+        setupLink: `${SITE_URL}/account/invite?link=${encodeURIComponent(invite.properties.action_link)}`,
       },
       { status: 201 }
     );
