@@ -103,48 +103,74 @@ Private storage bucket
 Signed URLs for protected photographs
 Deployment
 Vercel
-Architecture
-                    ┌─────────────────────┐
-                    │      Customer       │
-                    │                     │
-                    │ Gallery URL + PIN   │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │  Published Gallery  │
-                    │                     │
-                    │ Signed Image URLs   │
-                    └─────────────────────┘
 
+## Architecture
 
-┌──────────────────┐
-│      Admin       │
-│                  │
-│ Events           │
-│ Team Management  │
-│ Photo Curation   │
-│ Galleries        │
-└────────┬─────────┘
-         │
-         ▼
-┌─────────────────────────────┐
-│       Supabase              │
-│                             │
-│ PostgreSQL                  │
-│ Authentication              │
-│ Private Storage             │
-└─────────────┬───────────────┘
-              │
-              ▼
-┌─────────────────────────────┐
-│       Photographers         │
-│                             │
-│ Assigned Events             │
-│ Photo Uploads               │
-└─────────────────────────────┘
+The application follows a role-based architecture using Next.js for the
+frontend and API layer, Supabase for authentication, PostgreSQL for
+metadata, and Supabase Storage for private photo files.
 
-Project Structure
+```text
+                         ┌──────────────────────┐
+                         │      Customer        │
+                         │                      │
+                         │  Gallery URL + PIN   │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  Published Gallery   │
+                         │                      │
+                         │  PIN Verification    │
+                         │  Signed Image URLs   │
+                         └──────────┬───────────┘
+                                    │
+                                    │
+        ┌───────────────────────────┴──────────────────────────┐
+        │                                                      │
+        ▼                                                      ▼
+┌──────────────────────┐                            ┌──────────────────────┐
+│        Admin         │                            │    Team Member       │
+│                      │                            │                      │
+│  Create Events       │                            │  Assigned Events     │
+│  Manage Team         │                            │  Upload Photos       │
+│  Review Photos       │                            │  View Own Photos     │
+│  Select Photos       │                            │                      │
+│  Manage Galleries    │                            │                      │
+└──────────┬───────────┘                            └──────────┬───────────┘
+           │                                                   │
+           └──────────────────────┬────────────────────────────┘
+                                  │
+                                  ▼
+                         ┌──────────────────────┐
+                         │       Supabase       │
+                         │                      │
+                         │  Authentication      │
+                         │  PostgreSQL          │
+                         │  Private Storage     │
+                         └──────────┬───────────┘
+                                    │
+                         ┌──────────┴───────────┐
+                         │                      │
+                         ▼                      ▼
+                ┌─────────────────┐    ┌──────────────────┐
+                │   PostgreSQL    │    │ Supabase Storage │
+                │                 │    │                  │
+                │ Users / Roles   │    │ Private Photos  │
+                │ Events          │    │ Event Thumbnails│
+                │ Assignments     │    │                  │
+                │ Photo Metadata  │    │ Signed URLs     │
+                │ Galleries       │    │                  │
+                └─────────────────┘    └──────────────────┘
+
+                         Deployment
+                              │
+                              ▼
+                         ┌──────────┐
+                         │  Vercel  │
+                         └──────────┘
+##Project Structure
+
 
 photo-sharing-platform/
 │
@@ -183,6 +209,7 @@ photo-sharing-platform/
 │   │   └── page.tsx
 │   │
 │   ├── layout.tsx
+│   ├── page.tsx
 │   └── globals.css
 │
 ├── src/
@@ -192,16 +219,14 @@ photo-sharing-platform/
 │
 ├── public/
 │
-├── supabase/
-│
 ├── .env.local
 ├── .gitignore
 ├── package.json
-├── package-lock.json
 ├── tsconfig.json
 ├── next.config.ts
 ├── postcss.config.mjs
 └── README.md
+
 ## Database
 
 The application uses **PostgreSQL through Supabase**.
