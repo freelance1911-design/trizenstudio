@@ -3,6 +3,7 @@
 A full-stack photography workspace built for photography and event teams to manage events, collaborate with photographers, upload and curate photographs, and publish secure customer galleries.
 
 The platform provides separate experiences for **Administrators**, **Photographers/Team Members**, and **Customers**.
+This project is live in https://trizenstudio-fawn.vercel.app/
 
 ---
 
