@@ -1,7 +1,29 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const hasInviteToken = Boolean(
+      (hash.get("access_token") && hash.get("refresh_token")) ||
+        query.get("code") ||
+        query.get("token_hash")
+    );
+
+    if (hasInviteToken) {
+      router.replace(
+        `/account/password${window.location.search}${window.location.hash}`
+      );
+    }
+  }, [router]);
+
   return (
     <main className="min-h-screen overflow-hidden bg-[#f7f4ee] text-[#17212b]">
       <div className="mx-auto flex min-h-screen max-w-[1440px] flex-col px-6 py-6 sm:px-10 lg:px-14">

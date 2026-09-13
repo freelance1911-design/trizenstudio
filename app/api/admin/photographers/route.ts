@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
             role: "TEAM_MEMBER",
             password_set: false,
           },
-            redirectTo: `${SITE_URL}/account/password?invite_email=${encodeURIComponent(email)}`,
+            redirectTo: `${SITE_URL}/account/password`,
         },
       });
 

@@ -24,14 +24,12 @@ export default function PasswordPage() {
       const refreshToken = hash.get("refresh_token");
       const code = query.get("code");
       const tokenHash = query.get("token_hash");
-      const inviteEmail = query.get("invite_email")?.trim().toLowerCase() ?? "";
       const authError =
         query.get("error_description") ||
         hash.get("error_description");
       const authErrorCode =
         query.get("error_code") ||
         hash.get("error_code");
-      const hasInviteToken = Boolean(accessToken && refreshToken) || Boolean(code) || Boolean(tokenHash);
 
       let session;
 
@@ -88,10 +86,6 @@ export default function PasswordPage() {
 
         session = data.session;
         window.history.replaceState({}, document.title, window.location.pathname);
-      } else if (inviteEmail) {
-        setError("This invitation link is missing its secure token. Ask the admin to create a new invitation.");
-        setAuthReady(true);
-        return;
       } else {
         const { data } = await supabase.auth.getSession();
         session = data.session;
@@ -99,9 +93,6 @@ export default function PasswordPage() {
 
       if (!session?.user?.email) {
         setError("Open the secure setup link from your invitation email.");
-      } else if (inviteEmail && (!hasInviteToken || session.user.email.toLowerCase() !== inviteEmail)) {
-        await supabase.auth.signOut();
-        setError("This invitation is for a different account. Open the original photographer invitation link.");
       } else {
         setAccountEmail(session.user.email);
       }
