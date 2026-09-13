@@ -96,7 +96,8 @@ Private storage bucket
 Signed URLs for protected photographs
 Deployment
 Vercel
-Architecture
+
+##Architecture
                     ┌─────────────────────┐
                     │      Customer       │
                     │                     │
@@ -137,7 +138,7 @@ Architecture
 │ Photo Uploads               │
 └─────────────────────────────┘
 
-Project Structure
+##Project Structure
 
 photo-sharing-platform/
 │
@@ -189,11 +190,12 @@ photo-sharing-platform/
 ├── package.json
 ├── tsconfig.json
 └── README.md
-Database
+
+##Database
 
 The application uses PostgreSQL through Supabase.
 
-Main tables:
+##Main tables:
 
 profiles
 events
@@ -203,7 +205,7 @@ galleries
 gallery_photos
 Profiles
 
-Stores application-level user information and roles.
+-Stores application-level user information and roles.
 
 id
 full_name
@@ -212,7 +214,7 @@ role
 created_at
 Events
 
-Stores photography projects/events.
+-Stores photography projects/events.
 
 id
 name
@@ -223,14 +225,14 @@ created_by
 created_at
 Event Members
 
-Connects photographers with events.
+-Connects photographers with events.
 
 id
 event_id
 user_id
 Photos
 
-Stores photograph metadata.
+-Stores photograph metadata.
 
 id
 event_id
@@ -244,7 +246,7 @@ The actual image files are stored in Supabase Storage.
 
 The database stores only metadata and storage paths.
 
-Galleries
+##Galleries
 
 Stores customer gallery information.
 
@@ -334,7 +336,7 @@ The gallery access API verifies the PIN before returning gallery photographs.
 
 Photographs are stored in a private storage bucket and delivered using temporary signed URLs.
 
-Environment Variables:
+##Environment Variables:
 
 Create a .env.local file in the project root.
 
@@ -343,7 +345,8 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-Important
+
+##Important
 
 Never commit .env.local to GitHub.
 
@@ -351,7 +354,7 @@ The service-role key is a server-side secret and must never be exposed to the br
 
 Make sure .env.local is included in .gitignore.
 
-Local Development:
+##Local Development:
 1. Clone the repository
 git clone https://github.com/freelance1911-design/trizenstudio.git
 2. Enter the project
@@ -376,11 +379,11 @@ Supabase Setup
 
 Create a Supabase project and configure:
 
-Authentication:
+##Authentication:
 
 Enable email/password authentication.
 
-Database
+##Database
 
 Create the required tables:
 
