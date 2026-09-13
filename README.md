@@ -97,47 +97,71 @@ Signed URLs for protected photographs
 Deployment
 Vercel
 
-##Architecture
-                    ┌─────────────────────┐
-                    │      Customer       │
-                    │                     │
-                    │ Gallery URL + PIN   │
-                    └──────────┬──────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │  Published Gallery  │
-                    │                     │
-                    │ Signed Image URLs   │
-                    └─────────────────────┘
+## Architecture
 
+The application follows a role-based architecture using Next.js for the
+frontend and API layer, Supabase for authentication, PostgreSQL for
+metadata, and Supabase Storage for private photo files.
 
-┌──────────────────┐
-│      Admin       │
-│                  │
-│ Events           │
-│ Team Management  │
-│ Photo Curation   │
-│ Galleries        │
-└────────┬─────────┘
-         │
-         ▼
-┌─────────────────────────────┐
-│       Supabase              │
-│                             │
-│ PostgreSQL                  │
-│ Authentication              │
-│ Private Storage             │
-└─────────────┬───────────────┘
-              │
-              ▼
-┌─────────────────────────────┐
-│       Photographers         │
-│                             │
-│ Assigned Events             │
-│ Photo Uploads               │
-└─────────────────────────────┘
+```text
+                         ┌──────────────────────┐
+                         │      Customer        │
+                         │                      │
+                         │  Gallery URL + PIN   │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                         ┌──────────────────────┐
+                         │  Published Gallery   │
+                         │                      │
+                         │  PIN Verification    │
+                         │  Signed Image URLs   │
+                         └──────────┬───────────┘
+                                    │
+                                    │
+        ┌───────────────────────────┴──────────────────────────┐
+        │                                                      │
+        ▼                                                      ▼
+┌──────────────────────┐                            ┌──────────────────────┐
+│        Admin         │                            │    Team Member       │
+│                      │                            │                      │
+│  Create Events       │                            │  Assigned Events     │
+│  Manage Team         │                            │  Upload Photos       │
+│  Review Photos       │                            │  View Own Photos     │
+│  Select Photos       │                            │                      │
+│  Manage Galleries    │                            │                      │
+└──────────┬───────────┘                            └──────────┬───────────┘
+           │                                                   │
+           └──────────────────────┬────────────────────────────┘
+                                  │
+                                  ▼
+                         ┌──────────────────────┐
+                         │       Supabase       │
+                         │                      │
+                         │  Authentication      │
+                         │  PostgreSQL          │
+                         │  Private Storage     │
+                         └──────────┬───────────┘
+                                    │
+                         ┌──────────┴───────────┐
+                         │                      │
+                         ▼                      ▼
+                ┌─────────────────┐    ┌──────────────────┐
+                │   PostgreSQL    │    │ Supabase Storage │
+                │                 │    │                  │
+                │ Users / Roles   │    │ Private Photos  │
+                │ Events          │    │ Event Thumbnails│
+                │ Assignments     │    │                  │
+                │ Photo Metadata  │    │ Signed URLs     │
+                │ Galleries       │    │                  │
+                └─────────────────┘    └──────────────────┘
 
+                         Deployment
+                              │
+                              ▼
+                         ┌──────────┐
+                         │  Vercel  │
+                         └──────────┘
 ##Project Structure
 
 photo-sharing-platform/
