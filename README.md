@@ -214,138 +214,176 @@ photo-sharing-platform/
 ├── package.json
 ├── tsconfig.json
 └── README.md
+## Database
 
-##Database
+The application uses **PostgreSQL through Supabase**.
 
-The application uses PostgreSQL through Supabase.
+### Main Tables
 
-##Main tables:
+- `profiles`
+- `events`
+- `event_members`
+- `photos`
+- `galleries`
+- `gallery_photos`
 
-profiles
-events
-event_members
-photos
-galleries
-gallery_photos
-Profiles
+### Profiles
 
--Stores application-level user information and roles.
+Stores application-level user information and roles.
 
-id
-full_name
-email
-role
-created_at
-Events
+| Column | Description |
+|---|---|
+| `id` | Unique user ID linked to Supabase Auth |
+| `full_name` | User's full name |
+| `email` | User's email address |
+| `role` | User role (`ADMIN` or `TEAM_MEMBER`) |
+| `created_at` | Account creation timestamp |
 
--Stores photography projects/events.
+### Events
 
-id
-name
-description
-event_date
-thumbnail_path
-created_by
-created_at
-Event Members
+Stores photography projects and events.
 
--Connects photographers with events.
+| Column | Description |
+|---|---|
+| `id` | Unique event ID |
+| `name` | Event name |
+| `description` | Event description |
+| `event_date` | Date of the event |
+| `thumbnail_path` | Storage path for the event thumbnail |
+| `event_created_by` | Admin who created the event |
+| `created_at` | Event creation timestamp |
 
-id
-event_id
-user_id
-Photos
+### Event Members
 
--Stores photograph metadata.
+Connects photographers with their assigned events.
 
-id
-event_id
-uploaded_by
-filename
-storage_path
-file_size
-created_at
+| Column | Description |
+|---|---|
+| `id` | Unique assignment ID |
+| `event_id` | Assigned event |
+| `user_id` | Assigned team member |
 
-The actual image files are stored in Supabase Storage.
+### Photos
 
-The database stores only metadata and storage paths.
+Stores metadata for uploaded photographs.
 
-##Galleries
+| Column | Description |
+|---|---|
+| `id` | Unique photo ID |
+| `event_id` | Event associated with the photo |
+| `uploaded_by` | Team member who uploaded the photo |
+| `filename` | Original file name |
+| `storage_path` | Supabase Storage location |
+| `file_size` | File size in bytes |
+| `created_at` | Upload timestamp |
+
+The actual image files are stored in **Supabase Storage**.
+
+The database stores only photo metadata and storage paths.
+
+### Galleries
 
 Stores customer gallery information.
 
-id
-event_id
-slug
-pin_hash
-published
-created_at
-published_at
-Gallery Photos
+| Column | Description |
+|---|---|
+| `id` | Unique gallery ID |
+| `event_id` | Event associated with the gallery |
+| `slug` | Unique shareable gallery identifier |
+| `pin_hash` | SHA-256 hash of the gallery PIN |
+| `published` | Gallery publication status |
+| `created_at` | Gallery creation timestamp |
+| `published_at` | Gallery publication timestamp |
+
+### Gallery Photos
 
 Connects selected photographs to galleries.
 
-id
-gallery_id
-photo_id
-created_at
-Storage
+| Column | Description |
+|---|---|
+| `id` | Unique gallery-photo record |
+| `gallery_id` | Gallery ID |
+| `photo_id` | Selected photo ID |
+| `created_at` | Selection timestamp |
 
-The application uses a private Supabase Storage bucket named:
+---
 
+## Storage
+
+The application uses a **private Supabase Storage bucket** named:
+
+```text
 photos
 
 Images are stored using an event/user-based structure:
-
 photos/
 │
-├── event-id/
-│   └── photographer-id/
+├── {event-id}/
+│   └── {photographer-id}/
 │       ├── photo-1.jpg
 │       ├── photo-2.jpg
 │       └── photo-3.jpg
 │
 └── event-thumbnails/
-    └── event-id/
+    └── {event-id}/
         └── thumbnail.webp
-
 Images are not stored directly inside PostgreSQL.
 
-Private photographs are accessed using temporary signed URLs.
+Instead:
 
+Supabase Storage stores the actual image files.
+PostgreSQL stores photo metadata.
+Storage paths are stored in the photos table.
+Private photographs are accessed using temporary signed URLs.
 Authentication & Authorization
 
 Supabase Authentication handles user authentication.
 
 Application roles are stored in the profiles table.
 
+Supported Roles
 ADMIN
 TEAM_MEMBER
-Admin permissions
+Admin Permissions
+
+Administrators can:
+
 Create events
 Manage photographers
-Assign events
-View all uploads
-Curate galleries
+Assign photographers to events
+View all uploaded photographs
+Review and curate photographs
+Create galleries
 Publish galleries
 Delete photographers
-Photographer permissions
+Photographer / Team Member Permissions
+
+Team members can:
+
+Log in to the workspace
 View assigned events
 Upload photographs
-View own photographs
-Delete own photographs
-Customer permissions
+View their own uploaded photographs
+Delete their own photographs
 
-Customers do not have accounts.
+Team members cannot:
 
-They can only access a gallery after providing the correct PIN.
+Manage other users
+Access administrative functionality
+Publish galleries
+Customer Permissions
 
+Customers do not need an account.
+
+They can only access a published gallery by providing:
+
+Gallery URL
+Correct gallery PIN
 Gallery Security
 
 Customer galleries are private by default.
 
-A gallery must be explicitly published before it becomes accessible.
-
+A gallery must be explicitly published by an administrator before it becomes accessible.
 Gallery access requires:
 
 Gallery URL
